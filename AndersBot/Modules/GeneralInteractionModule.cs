@@ -37,6 +37,8 @@ public class GeneralInteractionModule : InteractionModuleBase<SocketInteractionC
     [SlashCommand("play", "Play a song")]
     public async Task Play(string query)
     {
+        await DeferAsync();
+        await ModifyOriginalResponseAsync(msg => msg.Content = "Looking for track...");
         LavaPlayer<LavaTrack> player;
         if (!_lavaNode.HasPlayer(Context.Guild))
         {
@@ -72,6 +74,8 @@ public class GeneralInteractionModule : InteractionModuleBase<SocketInteractionC
             return;
         }
 
+        await ModifyOriginalResponseAsync(msg => msg.Content = $"Playing {search.Tracks.First().Title}");
         await _audioService.QueueTrackToPlayer(player, search);
+
     }
 }
