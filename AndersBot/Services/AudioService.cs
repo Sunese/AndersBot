@@ -1,6 +1,4 @@
-﻿using Discord;
-using Victoria;
-using Victoria.Node;
+﻿using Victoria.Node;
 using Victoria.Player;
 using Victoria.Responses.Search;
 
@@ -34,10 +32,9 @@ public class AudioService
 
     }
 
-    public async Task QueueTrackToPlayer(LavaPlayer<LavaTrack> player, SearchResponse search)
+    public async Task QueueTracksToPlayer(LavaPlayer<LavaTrack> player, SearchResponse search)
     {
         List<LavaTrack> lavaTracks;
-        string newQueue;
         if (search.Status == SearchStatus.PlaylistLoaded)
         {
             lavaTracks = search.Tracks.ToList();
@@ -50,7 +47,7 @@ public class AudioService
             };
         }
 
-        if (player.PlayerState == PlayerState.Playing || player.PlayerState == PlayerState.Paused)
+        if (player.PlayerState is PlayerState.Playing or PlayerState.Paused)
         {
             foreach (var track in lavaTracks)
             {

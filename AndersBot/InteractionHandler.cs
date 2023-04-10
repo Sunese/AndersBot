@@ -6,6 +6,8 @@ using Discord.WebSocket;
 using Serilog;
 using Serilog.Events;
 using Victoria.Node;
+using Victoria.Node.EventArgs;
+using Victoria.Player;
 using IResult = Discord.Commands.IResult;
 
 namespace AndersBot;
@@ -57,6 +59,30 @@ public class InteractionHandler
         _client.MessageReceived += HandleMessageReceived;
         _commands.CommandExecuted += HandleCommandExecuted;
 
+        _client.Disconnected += Disconnected;
+
+        _lavaNode.OnTrackStart += OnTrackStart;
+        _lavaNode.OnUpdateReceived += OnUpdateReceived;
+
+
+    }
+
+    public Task OnUpdateReceived(UpdateEventArg<LavaPlayer<LavaTrack>, LavaTrack> arg)
+    {
+        //arg.Player.TextChannel.SendMessageAsync($"Enqueued {arg.Track.Title} <:pepeJAM:1095043579635826840>");
+        return Task.CompletedTask;
+    }
+
+    public Task OnTrackStart(TrackStartEventArg<LavaPlayer<LavaTrack>, LavaTrack> arg)
+    {
+        arg.Player.TextChannel.SendMessageAsync($"Playing {arg.Track.Title} <:pepeJAM:1095043579635826840>");
+        return Task.CompletedTask;
+    }
+
+    public Task Disconnected(Exception e)
+    {
+        _lavaNode.DisconnectAsync();
+        return Task.CompletedTask;
     }
 
     private Task LogAsync(LogMessage message)
@@ -88,6 +114,8 @@ public class InteractionHandler
             }
         else
             await _handler.RegisterCommandsGloballyAsync(true);
+
+        await _lavaNode.ConnectAsync();
     }
 
     private async Task HandleInteraction(SocketInteraction interaction)
