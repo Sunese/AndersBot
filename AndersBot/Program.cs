@@ -57,7 +57,6 @@ public class Program
             .AddSingleton<InteractionHandler>()
             .AddLogging(loggingBuilder =>
                 loggingBuilder.AddSerilog(dispose: true))
-            .AddSingleton<AudioService>()
             .AddLavaNode(x =>
             {
                 x.Authorization = Environment.GetEnvironmentVariable("LavaLinkPassword");
@@ -65,6 +64,7 @@ public class Program
                 x.Port = ushort.Parse(Environment.GetEnvironmentVariable("LavaLinkPort"));
                 x.SelfDeaf = true;
             })
+            .AddSingleton<AudioService>()
             .BuildServiceProvider();
     }
 
