@@ -9,6 +9,7 @@ using Victoria.Node;
 using Victoria.Node.EventArgs;
 using Victoria.Player;
 using IResult = Discord.Commands.IResult;
+using static AndersBot.Mentorhold8;
 
 namespace AndersBot;
 
@@ -62,9 +63,34 @@ public class InteractionHandler
         _client.Disconnected += Disconnected;
 
         _lavaNode.OnTrackStart += OnTrackStart;
-        _lavaNode.OnUpdateReceived += OnUpdateReceived;
+        _lavaNode.OnTrackStuck += OnTrackStuck;
+        _lavaNode.OnTrackEnd += OnTrackEnd;
+        _lavaNode.OnTrackException += OnTrackException;
 
+        //_client.UserVoiceStateUpdated += UserVoiceStateUpdated;
 
+    }
+
+    //public Task UserVoiceStateUpdated()
+
+    public Task OnTrackException(TrackExceptionEventArg<LavaPlayer<LavaTrack>, LavaTrack> arg)
+    {
+        arg.Player.TextChannel.SendMessageAsync($"LavaNode encountered an error with ({arg.Track.Title}) {peepoDown} Skipping...");
+        arg.Player.SkipAsync();
+        return Task.CompletedTask;
+    }
+
+    public Task OnTrackEnd(TrackEndEventArg<LavaPlayer<LavaTrack>, LavaTrack> arg)
+    {
+        arg.Player.SkipAsync();
+        return Task.CompletedTask;
+    }
+
+    public Task OnTrackStuck(TrackStuckEventArg<LavaPlayer<LavaTrack>, LavaTrack> arg)
+    {
+        arg.Player.TextChannel.SendMessageAsync($"Track got stuck ({arg.Track.Title}) {peepoDown} Skipping...");
+        arg.Player.SkipAsync();
+        return Task.CompletedTask;
     }
 
     public Task OnUpdateReceived(UpdateEventArg<LavaPlayer<LavaTrack>, LavaTrack> arg)
@@ -75,7 +101,7 @@ public class InteractionHandler
 
     public Task OnTrackStart(TrackStartEventArg<LavaPlayer<LavaTrack>, LavaTrack> arg)
     {
-        arg.Player.TextChannel.SendMessageAsync($"Playing {arg.Track.Title} <:pepeJAM:1095043579635826840>");
+        arg.Player.TextChannel.SendMessageAsync($"Playing {arg.Track.Title} {pepejam}\n{arg.Track.Url}");
         return Task.CompletedTask;
     }
 
