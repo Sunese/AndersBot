@@ -8,13 +8,14 @@ using static AndersBot.Mentorhold8;
 
 namespace AndersBot.Services;
 
-public class AudioService
+public class AudioService : IAudioService
 {
-    // Private portion
-    private LavaNode _lavaNode { get; set; }
+    private readonly ISearchService _searchService;
+    private readonly LavaNode _lavaNode;
 
-    public AudioService(LavaNode lavaNode)
+    public AudioService(ISearchService searchService, LavaNode lavaNode)
     {
+        _searchService = searchService;
         _lavaNode = lavaNode;
     }
 
@@ -29,7 +30,7 @@ public class AudioService
     {
         await voiceChannel.ConnectAsync(selfDeaf: true);
     }
-    
+
     private async Task<bool> IsPlaying(SocketInteractionContext ctx)
     {
         var hasPlayer = _lavaNode.TryGetPlayer(ctx.Guild, out var player);
@@ -79,7 +80,7 @@ public class AudioService
 
         if ((ctx.User as IGuildUser)?.VoiceChannel is not null) return true;
         await ctx.Interaction.ModifyOriginalResponseAsync(msg =>
-            msg.Content = $"You are not in a voice channel you fucking retard {madge}");
+            msg.Content = $"You are not in a voice channel {madge}");
         return false;
     }
 
@@ -103,21 +104,6 @@ public class AudioService
             return true;
         }
         return false;
-    }
-
-    private async Task<SearchResponse> Search(SocketInteractionContext ctx, string query)
-    {
-        var searchType = query.Substring(0, 4).Equals("http") ? SearchType.Direct : SearchType.YouTube;
-
-        if (query.Contains("spotify"))
-        {
-            await ctx.Interaction.ModifyOriginalResponseAsync(msg =>
-                msg.Content = $"Looks like you tried to queue a Spotify track or playlist. This is not supported right neow sowwy {peepoDown}");
-        }
-
-        var searchResult = await _lavaNode.SearchAsync(searchType, query);
-
-        return searchResult;
     }
 
     private async Task<bool> SearchSucceeded(SocketInteractionContext ctx, string query, SearchResponse searchResponse)
@@ -220,9 +206,7 @@ public class AudioService
             await CreatePlayer(ctx, userVoiceChannel);
         }
 
-        await Search(ctx, query);
-
-        var searchResponse = await Search(ctx, query);
+        var searchResponse = await _searchService.Search(ctx, query);
 
         if (!await SearchSucceeded(ctx, query, searchResponse))
         {

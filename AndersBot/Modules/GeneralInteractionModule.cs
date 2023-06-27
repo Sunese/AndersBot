@@ -19,13 +19,13 @@ namespace AndersBot.Modules;
 public class GeneralInteractionModule : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly ILogger<GeneralInteractionModule> _logger;
-    private readonly AudioService _audioService;
+    private readonly IAudioService _audioService;
     private readonly LavaNode _lavaNode;
     private readonly DiscordSocketClient _client;
 
     public GeneralInteractionModule(
         ILogger<GeneralInteractionModule> logger, 
-        AudioService audioService,
+        IAudioService audioService,
         LavaNode lavaNode,
         DiscordSocketClient client)
     {

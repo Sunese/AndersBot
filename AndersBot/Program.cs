@@ -18,7 +18,6 @@ public class Program
 {
     private readonly IConfiguration _configuration;
     private readonly IServiceProvider _services;
-
     private readonly DiscordSocketConfig _socketConfig = new()
     {
         GatewayIntents = GatewayIntents.All,
@@ -35,18 +34,8 @@ public class Program
 
         _configuration = new ConfigurationBuilder()
             .AddEnvironmentVariables(prefix: "DC_")
-            .AddJsonFile("appsettings.json", optional: true)
-            .AddUserSecrets<Program>()
+            .AddJsonFile("appsettings." + (IsDebug() ? "Development" : "Production") + ".json", optional: true, reloadOnChange: true)
             .Build();
-
-        var token = _configuration["DiscordBotToken"];
-        var lavaLinkPassword = _configuration["LavaLinkPassword"];
-        var lavaLinkAddress = _configuration["LavaLinkAddress"];
-        var lavaLinkPort = _configuration["LavaLinkPort"];
-        Environment.SetEnvironmentVariable("DiscordBotToken", token);
-        Environment.SetEnvironmentVariable("LavaLinkPassword", lavaLinkPassword);
-        Environment.SetEnvironmentVariable("LavaLinkAddress", lavaLinkAddress);
-        Environment.SetEnvironmentVariable("LavaLinkPort", lavaLinkPort);
 
         _services = new ServiceCollection()
             .AddSingleton(_configuration)
@@ -59,12 +48,14 @@ public class Program
                 loggingBuilder.AddSerilog(dispose: true))
             .AddLavaNode(x =>
             {
-                x.Authorization = Environment.GetEnvironmentVariable("LavaLinkPassword");
-                x.Hostname = Environment.GetEnvironmentVariable("LavaLinkAddress");
-                x.Port = ushort.Parse(Environment.GetEnvironmentVariable("LavaLinkPort"));
+                x.Authorization = _configuration["LavaLinkPassword"];
+                x.Hostname = _configuration["LavaLinkAddress"];
+                x.Port = ushort.Parse(_configuration["LavaLinkPort"]);
                 x.SelfDeaf = true;
             })
-            .AddSingleton<AudioService>()
+            .AddTransient<IAudioService, AudioService>()
+            // Singleton - Scoped - Transient
+            .AddTransient<ISearchService, SearchService>()
             .BuildServiceProvider();
     }
 
@@ -84,7 +75,7 @@ public class Program
             .InitializeAsync();
 
         // Bot token can be provided from the Configuration object we set up earlier
-        await client.LoginAsync(TokenType.Bot, Environment.GetEnvironmentVariable("DiscordBotToken"));
+        await client.LoginAsync(TokenType.Bot, _configuration["DiscordBotToken"]);
         await client.StartAsync();
 
         // Never quit the program until manually forced to.

@@ -19,13 +19,13 @@ namespace AndersBot.Modules;
 public class MusicInteractionModule : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly ILogger<MusicInteractionModule> _logger;
-    private readonly AudioService _audioService;
+    private readonly IAudioService _audioService;
     private readonly LavaNode _lavaNode;
     private readonly DiscordSocketClient _client;
 
     public MusicInteractionModule(
         ILogger<MusicInteractionModule> logger, 
-        AudioService audioService,
+        IAudioService audioService,
         LavaNode lavaNode,
         DiscordSocketClient client)
     {
@@ -34,7 +34,7 @@ public class MusicInteractionModule : InteractionModuleBase<SocketInteractionCon
         _lavaNode = lavaNode;
         _client = client;
     }
-    
+
     [SlashCommand("queue", "Show queue")]
     public async Task Queue()
     {
