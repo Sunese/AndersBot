@@ -35,7 +35,7 @@ public class AudioService : IAudioService
     {
         var hasPlayer = _lavaNode.TryGetPlayer(ctx.Guild, out var player);
 
-        var message = $"Not playing anything {peepoSit} (no player connected)";
+        var message = $"Not playing anything {peepoSit}";
 
         if (hasPlayer)
         {
@@ -146,11 +146,11 @@ public class AudioService : IAudioService
             }
         }
 
-        if (player.PlayerState is PlayerState.Playing or PlayerState.Paused or PlayerState.Stopped)
+        if (player.PlayerState is PlayerState.Playing)
         {
             // do nothing
         }
-        else if (player.PlayerState is PlayerState.None)
+        else if (player.PlayerState is PlayerState.Paused or PlayerState.Stopped or PlayerState.None)
         {
             _ = player.Vueue.TryDequeue(out var newTrack);
             await player.PlayAsync(newTrack);
@@ -229,21 +229,13 @@ public class AudioService : IAudioService
 
         _lavaNode.TryGetPlayer(ctx.Guild, out var player);
 
-        var skipped = "";
+        var currentlyPlaying = player.Track.Title;
 
-        if (player.Vueue.Count < 1)
-        {
-            skipped = player.Track.Title;
-            await player.StopAsync();
-        }
-        else
-        {
-            var (_skipped, _) = await player.SkipAsync();
-            skipped = _skipped.Title;
-        }
+        if (player.Vueue.Count < 1) await player.StopAsync();
+        else await player.SkipAsync();
 
         await ctx.Interaction.ModifyOriginalResponseAsync(msg => msg.Content =
-            $"Skipped {skipped} {hmmNice}");
+            $"Skipped {currentlyPlaying} {hmmNice}");
     }
 
     public async Task Stop(SocketInteractionContext ctx)
