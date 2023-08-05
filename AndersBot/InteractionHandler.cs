@@ -157,11 +157,15 @@ public class InteractionHandler
             if (!result.IsSuccess)
                 switch (result.Error)
                 {
-                    case InteractionCommandError.UnmetPrecondition:
-                        // implement
-                        break;
-                    default:
-                        break;
+                    case InteractionCommandError.UnmetPrecondition: throw new NotImplementedException();
+                    case InteractionCommandError.UnknownCommand: throw new NotImplementedException();
+                    case InteractionCommandError.ConvertFailed: throw new NotImplementedException();
+                    case InteractionCommandError.BadArgs: throw new NotImplementedException();
+                    case InteractionCommandError.Exception: throw new NotImplementedException();
+                    case InteractionCommandError.Unsuccessful: throw new NotImplementedException();
+                    case InteractionCommandError.ParseFailed: throw new NotImplementedException();
+                    case null: throw new NotImplementedException();
+                    default: throw new NotImplementedException();
                 }
         }
         catch
