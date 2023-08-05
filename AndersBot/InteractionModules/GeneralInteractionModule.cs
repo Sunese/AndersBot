@@ -26,33 +26,37 @@ public class GeneralInteractionModule : InteractionModuleBase<SocketInteractionC
         _client = client;
     }
 
-    [SlashCommand("respondhello", "hello")]
-    public async Task Hello()
-    {
-        await RespondAsync($"hiii {pepejam}");
-    }
+    // NOTE: these were set up to test wether emotes actually
+    //       show up. I have experienced that they sometimes don't.
+    //       Perhaps set up proper tests for this instead.
 
-    [SlashCommand("deferhello", "hello")]
-    public async Task Hello2()
-    {
-        await DeferAsync();
-        await ModifyOriginalResponseAsync(msg => msg.Content = $"hiii {pepejam}");
-    }
+    //[SlashCommand("respondhello", "hello")]
+    //public async Task Hello()
+    //{
+    //    await RespondAsync($"hiii {pepejam}");
+    //}
 
-    [SlashCommand("deferhackermans", "hello")]
-    public async Task Hello4()
-    {
-        await DeferAsync();
-        await ModifyOriginalResponseAsync(msg => msg.Content = $"hiii {a_hackermans}");
-    }
+    //[SlashCommand("deferhello", "hello")]
+    //public async Task Hello2()
+    //{
+    //    await DeferAsync();
+    //    await ModifyOriginalResponseAsync(msg => msg.Content = $"hiii {pepejam}");
+    //}
 
-    [SlashCommand("randomemotehello", "hello")]
-    public async Task Hello3()
-    {
-        await DeferAsync();
-        var emotes = await Context.Guild.GetEmotesAsync();
-        Random rnd = new Random();
-        var number = rnd.Next(emotes.Count);
-        await ModifyOriginalResponseAsync(msg => msg.Content = $"hiii {emotes.ElementAt(number)}");
-    }
+    //[SlashCommand("deferhackermans", "hello")]
+    //public async Task Hello4()
+    //{
+    //    await DeferAsync();
+    //    await ModifyOriginalResponseAsync(msg => msg.Content = $"hiii {a_hackermans}");
+    //}
+
+    //[SlashCommand("randomemotehello", "hello")]
+    //public async Task Hello3()
+    //{
+    //    await DeferAsync();
+    //    var emotes = await Context.Guild.GetEmotesAsync();
+    //    Random rnd = new Random();
+    //    var number = rnd.Next(emotes.Count);
+    //    await ModifyOriginalResponseAsync(msg => msg.Content = $"hiii {emotes.ElementAt(number)}");
+    //}
 }
