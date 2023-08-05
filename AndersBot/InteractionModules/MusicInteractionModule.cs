@@ -1,20 +1,11 @@
-﻿using Discord;
+﻿using AndersBot.Services;
 using Discord.Interactions;
-using System;
-using System.ComponentModel;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
-using AndersBot.Services;
 using Discord.WebSocket;
-using Microsoft.Extensions.Logging;
 using Victoria.Node;
-using Victoria.Player;
-using Victoria.Responses.Search;
-using static AndersBot.Mentorhold8;
+using IResult = Discord.Interactions.IResult;
 
 
-namespace AndersBot.Modules;
+namespace AndersBot.InteractionModules;
 
 public class MusicInteractionModule : InteractionModuleBase<SocketInteractionContext>
 {
