@@ -82,7 +82,22 @@ public class InteractionHandler
 
     public Task OnTrackEnd(TrackEndEventArg<LavaPlayer<LavaTrack>, LavaTrack> arg)
     {
-        arg.Player.SkipAsync();
+        switch (arg.Reason)
+        {
+            case TrackEndReason.Finished:
+                arg.Player.SkipAsync();
+                break;
+            case TrackEndReason.LoadFailed:
+                throw new NotImplementedException();
+            case TrackEndReason.Stopped:
+                break;
+            case TrackEndReason.Replaced:
+                break;
+            case TrackEndReason.Cleanup:
+                throw new NotImplementedException();
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
         return Task.CompletedTask;
     }
 
