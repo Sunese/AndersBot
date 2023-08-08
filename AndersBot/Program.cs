@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using AndersBot.Models.SpotifyAPI;
 using Discord.Commands;
 using Serilog;
 using AndersBot.Services;
@@ -56,6 +57,9 @@ public class Program
             .AddTransient<IAudioService, AudioService>()
             // Singleton - Scoped - Transient
             .AddTransient<ISearchService, SearchService>()
+            .AddScoped<ISpotifySearcher, SpotifySearcher>()
+            .Configure<ClientOptions>(
+                _configuration.GetSection(ClientOptions.SpotifyClient))
             .BuildServiceProvider();
     }
 
