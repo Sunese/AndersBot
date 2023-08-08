@@ -86,6 +86,10 @@ public class InteractionHandler
         {
             case TrackEndReason.Finished:
                 arg.Player.SkipAsync();
+                if (arg.Player.Vueue.Count == 0)
+                {
+                    arg.Player.TextChannel.SendMessageAsync($"No more tracks in queue {peepoDown}");
+                }
                 break;
             case TrackEndReason.LoadFailed:
                 throw new NotImplementedException();
