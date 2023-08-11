@@ -4,7 +4,7 @@ using Discord.Interactions;
 using Victoria.Node;
 using Victoria.Player;
 using Victoria.Responses.Search;
-using static AndersBot.Mentorhold8;
+using static AndersBot.DiscordEmotes;
 
 namespace AndersBot.Services;
 
