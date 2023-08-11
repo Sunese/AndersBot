@@ -1,6 +1,7 @@
 ﻿using System.Net.Sockets;
 using Discord;
 using Discord.Interactions;
+using Discord.WebSocket;
 using Victoria.Node;
 using Victoria.Player;
 using Victoria.Responses.Search;
@@ -19,7 +20,9 @@ public class AudioService : IAudioService
         _lavaNode = lavaNode;
     }
 
-    // Public portion
+    /*
+     * Public portion
+     */
     public async Task Join(SocketInteractionContext ctx)
     {
         await ctx.Interaction.DeferAsync();
@@ -31,23 +34,31 @@ public class AudioService : IAudioService
 
         var voicechannel = (ctx.User as IGuildUser)?.VoiceChannel;
         await JoinVoice(ctx, voicechannel);
-        //await voicechannel.ConnectAsync(selfDeaf: true);
-
-        await ctx.Interaction.ModifyOriginalResponseAsync(msg =>
-            msg.Content = $"Haiii {peepoShy}");
+        await ModifyResponseAsync(ctx, $"Haiii {peepoShy}");
     }
 
     public async Task Play(SocketInteractionContext ctx, string query)
     {
         await ctx.Interaction.DeferAsync();
-
-        if (!await UserIsInChannel(ctx) || !await IsConnectedToLavaLink(ctx))
+        
+        if (!await UserIsInChannel(ctx))
         {
+            await ModifyResponseAsync(ctx, $"You are not in a voice channel {madge}");
             return;
         }
 
+        if (!_lavaNode.IsConnected)
+        {
+            await ModifyResponseAsync(ctx, $"Lost connection to LavaLink {sadge} Trying to re-connect... {animated_hackermans}");
+
+            // NOTE: blocking
+            // TODO: perhaps have an event trigger another response if connection is never succesful
+            await ReconnectToLavaLink();
+
+            await ModifyResponseAsync(ctx, $"Re-established LavaLink connection {hmmNice}");
+        }
+
         var userVoiceChannel = (ctx.User as IGuildUser)?.VoiceChannel;
-        //await userVoiceChannel.ConnectAsync(selfDeaf: true);
 
         if (!_lavaNode.HasPlayer(ctx.Guild))
         {
@@ -56,14 +67,20 @@ public class AudioService : IAudioService
 
         var searchResponse = await _searchService.Search(ctx, query);
 
-        if (!await SearchSucceeded(ctx, query, searchResponse))
+        switch (searchResponse.Status)
         {
-            return;
+            case SearchStatus.LoadFailed:
+                await ModifyResponseAsync(ctx, $"An error occurred {peepoDown} Try again!");
+                return;
+            case SearchStatus.NoMatches:
+                await ModifyResponseAsync(ctx, $"No match found for {query} {peepoDown}");
+                // TODO: ask user if they want bot to search on SC because SC is very weird D:
+                return;
+            default:
+                _lavaNode.TryGetPlayer(ctx.Guild, out var player);
+                await QueueTracksToPlayer(ctx, player, searchResponse);
+                break;
         }
-
-        _lavaNode.TryGetPlayer(ctx.Guild, out var player);
-
-        await QueueTracksToPlayer(ctx, player, searchResponse);
     }
 
     public async Task Skip(SocketInteractionContext ctx)
@@ -172,6 +189,9 @@ public class AudioService : IAudioService
         return player;
     }
 
+    /*
+     * Private portion
+     */
     private async Task<bool> IsPlaying(SocketInteractionContext ctx)
     {
         var hasPlayer = _lavaNode.TryGetPlayer(ctx.Guild, out var player);
@@ -216,47 +236,14 @@ public class AudioService : IAudioService
 
     private async Task<bool> UserIsInChannel(SocketInteractionContext ctx)
     {
-        //var voicechannel = ctx.Client.Guilds.First().CurrentUser.VoiceChannel;
-        //await voicechannel.(selfDeaf: true);
-
-        if ((ctx.User as IGuildUser)?.VoiceChannel is not null) return true;
-        await ctx.Interaction.ModifyOriginalResponseAsync(msg =>
-            msg.Content = $"You are not in a voice channel {madge}");
-        return false;
+        return (ctx.User as IGuildUser)?.VoiceChannel is not null;
     }
 
-    private async Task<bool> IsConnectedToLavaLink(SocketInteractionContext ctx)
+    private async Task ReconnectToLavaLink()
     {
-        if (_lavaNode.IsConnected) return true;
-
-        await ctx.Interaction.ModifyOriginalResponseAsync(msg =>
-            msg.Content = $"Lost connection to LavaLink {sadge} Trying to re-connect... {a_hackermans}");
-        // NOTE: blocking
-        // TODO: perhaps have an event trigger another response if connection is never succesful
         while (!_lavaNode.IsConnected)
         {
-            // do nothing...
-        }
-        await ctx.Interaction.ModifyOriginalResponseAsync(msg =>
-            msg.Content = $"Re-established LavaLink connection {hmmNice}");
-        return true;
-    }
-
-    private async Task<bool> SearchSucceeded(SocketInteractionContext ctx, string query, SearchResponse searchResponse)
-    {
-        switch (searchResponse.Status)
-        {
-            case SearchStatus.LoadFailed:
-                await ctx.Interaction.ModifyOriginalResponseAsync(msg =>
-                    msg.Content = $"An error occurred {peepoDown} Try again!");
-                return false;
-            case SearchStatus.NoMatches:
-                await ctx.Interaction.ModifyOriginalResponseAsync(msg =>
-                    msg.Content = $"No match found for {query} {peepoDown}");
-                // TODO: ask user if they want bot to search on SC because SC is very weird D:
-                return false;
-            default:
-                return true;
+            await _lavaNode.ConnectAsync();
         }
     }
 
@@ -304,5 +291,10 @@ public class AudioService : IAudioService
             await ctx.Interaction.ModifyOriginalResponseAsync(
                 msg => msg.Content = $"Queued {search.Tracks.First().Title} {hmmNice}");
         }
+    }
+
+    private async Task ModifyResponseAsync(SocketInteractionContext ctx, string newResponse)
+    {
+        await ctx.Interaction.ModifyOriginalResponseAsync(msg => msg.Content = newResponse);
     }
 }
