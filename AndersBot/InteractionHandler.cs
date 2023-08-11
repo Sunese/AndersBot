@@ -95,7 +95,9 @@ public class InteractionHandler
                 arg.Player.SkipAsync();
                 if (arg.Player.Vueue.Count == 0)
                 {
-                    arg.Player.TextChannel.SendMessageAsync($"No more tracks in queue {peepoDown}");
+                    arg.Player.TextChannel.SendMessageAsync($"No more tracks in queue {peepoDown} I'm leaving :wave:");
+                    _lavaNode.LeaveAsync(arg.Player.VoiceChannel);
+
                 }
                 break;
             case TrackEndReason.LoadFailed:
