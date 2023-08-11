@@ -35,7 +35,7 @@ public class Program
 
         _configuration = new ConfigurationBuilder()
             .AddEnvironmentVariables(prefix: "DC_")
-            .AddJsonFile("appsettings." + (IsDebug() ? "Development" : "Production") + ".json", optional: true, reloadOnChange: true)
+            .AddJsonFile("appsettings." + (IsDebug() ? "Development" : "Production") + ".json", optional: false, reloadOnChange: true)
             .Build();
 
         _services = new ServiceCollection()
