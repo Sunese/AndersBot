@@ -66,12 +66,19 @@ public class InteractionHandler
         _lavaNode.OnTrackStuck += OnTrackStuck;
         _lavaNode.OnTrackEnd += OnTrackEnd;
         _lavaNode.OnTrackException += OnTrackException;
-
+        _lavaNode.OnWebSocketClosed += OnWebSocketClosed;
         //_client.UserVoiceStateUpdated += UserVoiceStateUpdated;
 
     }
 
     //public Task UserVoiceStateUpdated()
+
+    public Task OnWebSocketClosed(WebSocketClosedEventArg arg)
+    {
+        _logger.LogInformation("Lavanode websocket was closed");
+        _lavaNode.ConnectAsync();
+        return Task.CompletedTask;
+    }
 
     public Task OnTrackException(TrackExceptionEventArg<LavaPlayer<LavaTrack>, LavaTrack> arg)
     {
