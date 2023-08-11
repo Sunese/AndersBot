@@ -1,6 +1,6 @@
 ﻿namespace AndersBot
 {
-    public static class Mentorhold8
+    public static class DiscordEmotes
     {
         public static string
             HYPERS = "<:HYPERS:1034153332316577864>",
@@ -28,7 +28,7 @@
             isforme = "<:isforme:785500595107659777>",
             cowboythink = "<:cowboythink:755731824252026901>",
             madge = "<:Madge:1034154157256474706>",
-            a_hackermans = "<a:HACKERMANS:587667462670123060>";
+            animated_hackermans = "<a:HACKERMANS:587667462670123060>";
 
     }
 }

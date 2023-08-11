@@ -9,7 +9,7 @@ using Victoria.Node;
 using Victoria.Node.EventArgs;
 using Victoria.Player;
 using IResult = Discord.Commands.IResult;
-using static AndersBot.Mentorhold8;
+using static AndersBot.DiscordEmotes;
 
 namespace AndersBot;
 

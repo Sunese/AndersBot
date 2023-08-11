@@ -2,7 +2,7 @@
 using Discord.Interactions;
 using Discord.WebSocket;
 using Victoria.Node;
-using static AndersBot.Mentorhold8;
+using static AndersBot.DiscordEmotes;
 
 
 namespace AndersBot.InteractionModules;
