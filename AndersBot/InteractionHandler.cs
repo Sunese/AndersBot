@@ -68,10 +68,18 @@ public class InteractionHandler
         _lavaNode.OnTrackException += OnTrackException;
         _lavaNode.OnWebSocketClosed += OnWebSocketClosed;
         //_client.UserVoiceStateUpdated += UserVoiceStateUpdated;
-
+        _client.Disconnected += OnDisconnected;
     }
 
-    //public Task UserVoiceStateUpdated()
+    private Task OnDisconnected(Exception arg)
+    {
+        _logger.LogInformation("Disconnected");
+        throw new NotImplementedException();
+    }
+
+    //private Task UserVoiceStateUpdated(SocketUser socketUser, SocketVoiceState socketVoiceState1, SocketVoiceState socketVoiceState2)
+    //{
+    //}
 
     public Task OnWebSocketClosed(WebSocketClosedEventArg arg)
     {
@@ -97,7 +105,6 @@ public class InteractionHandler
                 {
                     arg.Player.TextChannel.SendMessageAsync($"No more tracks in queue {peepoDown} I'm leaving :wave:");
                     _lavaNode.LeaveAsync(arg.Player.VoiceChannel);
-
                 }
                 break;
             case TrackEndReason.LoadFailed:

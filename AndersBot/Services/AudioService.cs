@@ -243,7 +243,8 @@ public class AudioService : IAudioService
     {
         while (!_lavaNode.IsConnected)
         {
-            await _lavaNode.ConnectAsync();
+            // I think the client already tries to re-connect itself
+            //await _lavaNode.ConnectAsync();
         }
     }
 
