@@ -8,9 +8,9 @@ namespace AndersBot.Services;
 public class SpotifySearcher : ISpotifySearcher
 {
     private readonly HttpClient _httpClient;
-    private readonly IOptions<ClientOptions> _opts;
+    private readonly IOptions<SpotifyClientOptions> _opts;
 
-    public SpotifySearcher(IOptions<ClientOptions> opts)
+    public SpotifySearcher(IOptions<SpotifyClientOptions> opts)
     {
         _opts = opts;
         _httpClient = new HttpClient();

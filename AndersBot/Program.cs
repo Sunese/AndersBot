@@ -13,6 +13,7 @@ using Serilog;
 using AndersBot.Services;
 using Serilog.Events;
 using Victoria;
+using Victoria.WebSocket;
 
 namespace AndersBot;
 public class Program
@@ -58,8 +59,8 @@ public class Program
             // Singleton - Scoped - Transient
             .AddTransient<ISearchService, SearchService>()
             .AddScoped<ISpotifySearcher, SpotifySearcher>()
-            .Configure<ClientOptions>(
-                _configuration.GetSection(ClientOptions.SpotifyClient))
+            .Configure<SpotifyClientOptions>(
+                _configuration.GetSection(SpotifyClientOptions.SpotifyClient))
             .BuildServiceProvider();
     }
 
